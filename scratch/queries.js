@@ -5,27 +5,25 @@ const { MONGODB_URI } = require('../config');
 
 const Note = require('../models/note');
 
-// mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
-//   .then(() => {
-//     const searchTerm = 'lady gaga';
-//     let filter = {};
+mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
+  .then(() => {
+    const searchTerm = 'boring';
+    const re = new RegExp(searchTerm, 'i');
 
-//     if (searchTerm) {
-//       filter.title = { $regex: searchTerm, $options: 'i' };
-//     }
+    let filter = {};
 
-//     return Note.find(filter).sort({ updatedAt: 'desc' });
-//   })
-//   .then(results => {
-//     console.log(results);
-//   })
-//   .then(() => {
-//     return mongoose.disconnect();
-//   })
-//   .catch(err => {
-//     console.error(`ERROR: ${err.message}`);
-//     console.error(err);
-//   });
+    return Note.find({$or: [{title: re}, {content:re}]}).sort({ updatedAt: 'desc' });
+  })
+  .then(results => {
+    console.log(results);
+  })
+  .then(() => {
+    return mongoose.disconnect();
+  })
+  .catch(err => {
+    console.error(`ERROR: ${err.message}`);
+    console.error(err);
+  });
 
 // mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
 //   .then(() => {
@@ -76,18 +74,19 @@ const Note = require('../models/note');
 //     console.error(err);
 //   });
 
-mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
-  .then(() => {
-    const id = '000000000000000000000003';
-    return Note.findByIdAndRemove(id);
-  })
-  .then(results => {
-    console.log(results);
-  })
-  .then(() => {
-    return mongoose.disconnect();
-  })
-  .catch(err => {
-    console.error(`ERROR: ${err.message}`);
-    console.error(err);
-  });
+//delete:
+// mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
+//   .then(() => {
+//     const id = '000000000000000000000003';
+//     return Note.findByIdAndRemove(id);
+//   })
+//   .then(results => {
+//     console.log(results);
+//   })
+//   .then(() => {
+//     return mongoose.disconnect();
+//   })
+//   .catch(err => {
+//     console.error(`ERROR: ${err.message}`);
+//     console.error(err);
+//   });
