@@ -10,6 +10,14 @@ const noteSchema = new mongoose.Schema({
 // Add `createdAt` and `updatedAt` fields
 noteSchema.set('timestamps', true);
 
+noteSchema.set('toJSON', {
+  virtuals: true,     // include built-in virtual `id`
+  transform: (doc, ret) => {
+    delete ret._id; // delete `_id`
+    delete ret.__v; //delete v
+  }
+});
+
 let Note = mongoose.model('Note', noteSchema);
 
 module.exports = Note;

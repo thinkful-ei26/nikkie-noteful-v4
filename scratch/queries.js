@@ -10,8 +10,6 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
     const searchTerm = 'boring';
     const re = new RegExp(searchTerm, 'i');
 
-    let filter = {};
-
     return Note.find({$or: [{title: re}, {content:re}]}).sort({ updatedAt: 'desc' });
   })
   .then(results => {
