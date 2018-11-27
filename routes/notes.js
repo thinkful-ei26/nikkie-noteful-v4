@@ -1,50 +1,97 @@
 'use strict';
 
 const express = require('express');
-
 const router = express.Router();
+const Note = require('../models/note');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
+  const searchTerm = req.query.searchTerm;
+  const re = new RegExp(searchTerm, 'i');
 
-  console.log('Get All Notes');
-  res.json([
-    { id: 1, title: 'Temp 1' },
-    { id: 2, title: 'Temp 2' },
-    { id: 3, title: 'Temp 3' }
-  ]);
-
+  return Note.find({$or: [{title: re}, {content:re}]}).sort({ updatedAt: 'desc' })
+    .then(notes => {
+      res.json(notes);
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
+  const id = req.params.id;
 
-  console.log('Get a Note');
-  res.json({ id: 1, title: 'Temp 1' });
+  return Note.findById(id)
+    .then(notes => {
+      res.json(notes);
+    })
+
+    .catch(err => {
+      next(err);
+    });
 
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
 
-  console.log('Create a Note');
-  res.location('path/to/new/document').status(201).json({ id: 2, title: 'Temp 2' });
+  const requiredFields = ['title', 'content'];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
 
+  return Note .create({
+    title: req.body.title,
+    content: req.body.content  
+  })
+    .then(note => {
+      res.location(`http://${req.headers.host}/api/notes/${note.id}`).status(201).json(note);
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
+  const id = req.params.id;
 
-  console.log('Update a Note');
-  res.json({ id: 1, title: 'Updated Temp 1' });
+  const updatedObj = {};
+  const updateableFields = ['title', 'content'];
+
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      updatedObj[field] = req.body[field];
+    }
+  });
+
+  return Note.findByIdAndUpdate(id, {$set: updatedObj}, {new: true})
+    .then(note => {
+      res.status(200).json(note);
+    })
+    .catch(err => {
+      next(err);
+    });
 
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
+  const id = req.params.id;
 
-  console.log('Delete a Note');
-  res.status(204).end();
+  return Note.findByIdAndDelete(id)
+    .then(note => {
+      res.sendStatus(204);
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 module.exports = router;
