@@ -12,4 +12,4 @@ noteSchema.set('timestamps', true);
 
 let Note = mongoose.model('Note', noteSchema);
 
-module.exports = {Note};
+module.exports = Note;
