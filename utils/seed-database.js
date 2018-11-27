@@ -16,3 +16,5 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
   .catch(err => {
     console.error(err);
   });
+
+// this drops whatever is currently in the database and repopulates it when we run it with node ./utils/seed-database.js
