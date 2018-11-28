@@ -107,8 +107,8 @@ describe('Notes API tests', function(){
           expect(res.body).to.be.a('object');
           expect(res.body).to.include.keys(
             'title', 'content', 'id', 'createdAt', 'updatedAt');
-          expect(res.body.title).to.equal(newNote.title);
           expect(res.body.id).to.not.be.null;
+          expect(res.body.title).to.equal(newNote.title);
           expect(res.body.content).to.equal(newNote.content);
           return Note.findById(res.body.id);
         })
@@ -183,4 +183,4 @@ describe('Notes API tests', function(){
   });
 });
 
-//QUESTION: how do we test for negative tests?
+//QUESTION: how do we test for negative tests??
