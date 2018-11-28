@@ -1,0 +1,142 @@
+[
+  {
+    "_id": { $oid : "000000000000000000000001"},
+    "title": "5 life lessons learned from cats",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2017-01-03T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-01-05T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000002"},
+    "title": "What the government doesn't want you to know about cats",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2017-03-05T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-03-07T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000003"},
+    "title": "The most boring article about cats you'll ever read",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2017-07-07T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-07-15T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000004"},
+    "title": "7 things lady gaga has in common with cats",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2017-08-12T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-08-25T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000005"},
+    "title": "The most incredible article about cats you'll ever read",
+    "content": "Lorem ipsum dolor sit amet, boring consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+    "createdAt" : {$date : "2017-12-03T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-12-24T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000006"},
+    "title": "10 ways cats can help you live to 100",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2017-02-04T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-02-16T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000007"},
+    "title": "9 reasons you can blame the recession on cats",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2017-06-04T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-06-18T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000008"},
+    "title": "10 ways marketers are making you addicted to cats",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2017-10-08T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-10-28T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000009"},
+    "title": "8 tricks you can teach a cat",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2017-12-02T14:33:17.229Z"},
+    "updatedAt" : {$date : "2017-12-25T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000010"},
+    "title": "What to say to a cat if you run into one in an elevator",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2018-01-03T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-01-05T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000011"},
+    "title": "5 life lessons learned from dogs",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2018-05-05T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-05-19T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000012"},
+    "title": "What the government doesn't want you to know about dogs",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2018-07-14T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-07-24T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000013"},
+    "title": "The most boring article about dogs you'll ever read",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2018-08-13T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-08-23T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000014"},
+    "title": "7 things lady gaga has in common with dogs",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2018-07-03T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-07-08T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000015"},
+    "title": "The most incredible article about dogs you'll ever read",
+    "content": "Lorem ipsum dolor sit amet, boring consectetur adipiscing elit, sed do eiusmod tempor incididunt ut.",
+    "createdAt" : {$date : "2018-07-23T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-07-28T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000016"},
+    "title": "10 ways dogs can help you live to 100",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2018-08-24T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-08-24T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000017"},
+    "title": "9 reasons you can blame the recession on dogs",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2018-08-12T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-08-22T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000018"},
+    "title": "10 ways marketers are making you addicted to dogs",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2018-09-01T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-09-15T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000019"},
+    "title": "8 tricks you can teach a dog",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et.",
+    "createdAt" : {$date : "2018-09-12T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-09-14T14:33:17.229Z"}
+  },
+  {
+    "_id": { $oid : "000000000000000000000020"},
+    "title": "What to say to a dog if you run into one in an elevator",
+    "content": "Posuere sollicitudin aliquam ultrices sagittis orci a. Feugiat sed lectus vestibulum mattis ullamcorper",
+    "createdAt" : {$date : "2018-09-04T14:33:17.229Z"},
+    "updatedAt" : {$date : "2018-09-17T14:33:17.229Z"}
+  }
+]
