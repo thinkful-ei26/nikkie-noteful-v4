@@ -2,6 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Note = require('../models/note');
 
 /* ========== GET/READ ALL ITEMS ========== */
@@ -9,7 +10,11 @@ router.get('/', (req, res, next) => {
   const searchTerm = req.query.searchTerm;
   const re = new RegExp(searchTerm, 'i');
 
-  return Note.find({$or: [{title: re}, {content:re}]}).sort({ updatedAt: 'desc' })
+  let filter = {};
+
+  filter.$or = [{ 'title': re }, { 'content': re }];
+
+  return Note.find(filter).sort({ updatedAt: 'desc' })
     .then(notes => {
       res.json(notes);
     })
@@ -22,11 +27,16 @@ router.get('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
   const id = req.params.id;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('The `id` is not valid');
+    err.status = 400;
+    return next(err);
+  }
+
   return Note.findById(id)
     .then(notes => {
       res.json(notes);
     })
-
     .catch(err => {
       next(err);
     });
@@ -46,7 +56,7 @@ router.post('/', (req, res, next) => {
     }
   }
 
-  return Note .create({
+  return Note.create({
     title: req.body.title,
     content: req.body.content  
   })
