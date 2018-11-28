@@ -158,7 +158,6 @@ describe('Notes API tests', function(){
   });
 
   describe('DELETE endpoint', function() {
-    // strategy:
     //  1. get a note
     //  2. make a DELETE request for that note's id
     //  3. assert that response has right status code
