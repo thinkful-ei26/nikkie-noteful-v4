@@ -71,3 +71,4 @@ const folders = [
 ];
 
 module.exports = { notes, folders };
+//QUESTION: why are the keys in quotes too? They dont have to be, do they? 
