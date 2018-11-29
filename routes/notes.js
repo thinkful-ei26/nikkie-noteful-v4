@@ -95,6 +95,13 @@ router.put('/:id', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
   const id = req.params.id;
 
+  //if the id isnt a valid mongoose id, then don't do findbyidanddelete 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('The `id` is not valid');
+    err.status = 400;
+    return next(err);
+  }
+
   return Note.findByIdAndDelete(id)
     .then(note => {
       res.sendStatus(204);
