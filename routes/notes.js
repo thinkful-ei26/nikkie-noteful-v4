@@ -92,7 +92,7 @@ router.put('/:id', (req, res, next) => {
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', async (req, res, next) => {
   const id = req.params.id;
 
   //if the id isnt a valid mongoose id, then don't do findbyidanddelete 
@@ -102,13 +102,13 @@ router.delete('/:id', (req, res, next) => {
     return next(err);
   }
 
-  return Note.findByIdAndDelete(id)
-    .then(note => {
-      res.sendStatus(204);
-    })
-    .catch(err => {
-      next(err);
-    });
+  const note = await Note.findByIdAndDelete(id);
+  if (!note){
+    return next();
+  }
+
+  // need to complete the above and then call a then or else it wont work
+  res.sendStatus(204);
 });
 
 module.exports = router;

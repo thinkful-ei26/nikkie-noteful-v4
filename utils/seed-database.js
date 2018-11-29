@@ -13,7 +13,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
     return Promise.all([
       Note.insertMany(notes),
       Folder.insertMany(folders),
-      Folder.createIndexes()//tells Mongo to index the Folders data immediately. The index is used enforce the unique folder names rule you created in the schema. QUESTION: huh?
+      Folder.createIndexes()//tells Mongo to index the Folders data immediately. The index is used to enforce the unique folder names rule you created in the schema. Normally, the index is automatically created in the background. But that leaves open a small window of time when you could, in theory, seed the database and then create a folder with a duplicate name. Calling createIndexes() forces Mongo to create the index and prevents error from happening.
     ]);
   })
   .then(([notes,folders]) => {

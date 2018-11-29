@@ -2,10 +2,10 @@
 
 const notes = [
   {
-    '_id': '000000000000000000000000',
-    'title': '5 life lessons learned from cats',
-    'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    'folderId': '111111111111111111111100'
+    _id: '000000000000000000000000',
+    title: '5 life lessons learned from cats',
+    content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+    folderId: '111111111111111111111100'
   },
   {
     '_id': '000000000000000000000001',
@@ -71,4 +71,4 @@ const folders = [
 ];
 
 module.exports = { notes, folders };
-//QUESTION: why are the keys in quotes too? They dont have to be, do they? 
+//QUESTION: why are the keys in quotes too? They dont have to be, do they?
