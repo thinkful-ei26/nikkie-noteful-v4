@@ -9,11 +9,15 @@ const { notes, folders } = require('../db/seed/data');
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
   .then(() => mongoose.connection.db.dropDatabase())
-  .then(()=> Folder.insertMany(folders))
-  .then(()=> Folder.createIndexes()) //tells Mongo to index the Folders data immediately. The index is used enforce the unique folder names rule you created in the schema. QUESTION: huh?
-  .then(() => Note.insertMany(notes))
-  .then(results => {
-    console.info(`Inserted ${results.length} Notes`);
+  .then(()=> {
+    return Promise.all([
+      Note.insertMany(notes),
+      Folder.insertMany(folders),
+      Folder.createIndexes()//tells Mongo to index the Folders data immediately. The index is used enforce the unique folder names rule you created in the schema. QUESTION: huh?
+    ]);
+  })
+  .then(([notes,folders]) => {
+    console.info(`Inserted ${notes.length} Notes and ${folders.length} folders`);
   })
   .then(() => mongoose.disconnect())
   .catch(err => {
