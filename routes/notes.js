@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
   if (folderId) {
     filter.folderId =  folderId;
   }
-  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used?
+  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used? When user clicks folder and wants to see notes in that folder?...
 
 
   if (searchTerm) {
