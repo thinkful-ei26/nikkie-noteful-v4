@@ -72,5 +72,24 @@ const folders = [
   }
 ];
 
-module.exports = { notes, folders };
+const tags = [
+  {
+    '_id': '222222222222222222222200',
+    'name': 'breed'
+  },
+  {
+    '_id': '222222222222222222222201',
+    'name': 'hybrid'
+  },
+  {
+    '_id': '222222222222222222222202',
+    'name': 'domestic'
+  },
+  {
+    '_id': '222222222222222222222203',
+    'name': 'feral'
+  }
+];
+
+module.exports = { notes, folders, tags };
 //why are the keys in quotes too? They dont have to be, do they? doesnt matter in js, would matter if json file - in which case would have to make it double quotes
