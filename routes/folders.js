@@ -25,7 +25,7 @@ router.get('/:id', (req, res, next) => {
 
   // make sure the id is a valid mongoose type
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('The `id` is not valid');
+    const err = new Error('The `id` is not a valid Mongoose id!');
     err.status = 400;
     return next(err);
   }
@@ -122,7 +122,7 @@ router.delete('/:id', (req, res, next) => {
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('The `id` is not valid');
+    const err = new Error('The `id` is not a valid Mongoose id!');
     err.status = 400;
     return next(err);
   }
