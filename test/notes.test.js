@@ -127,6 +127,7 @@ describe('Notes API tests', function(){
     //  4. Prove note in db is correctly updated
     it('should update fields you send over', function() {
       const updateNote = {
+        title: 'changing',
         content: 'changed'
       };
       const updateableFields = ['title', 'content'];
