@@ -30,7 +30,7 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  return Folder.findById(id)
+  Folder.findById(id)
     .then(folder => {
       if(folder){
         res.status(200).json(folder);
@@ -62,7 +62,7 @@ router.post('/', (req, res, next) => {
 
   const newFolder = {name};
 
-  return Folder.create(newFolder)
+  Folder.create(newFolder)
     .then(folder => {
       res.location(`http://${req.headers.host}/api/folders/${folder.id}`).status(201).json(folder);
     })
@@ -96,7 +96,7 @@ router.put('/:id', (req, res, next) => {
   }
 
   const updateFolder = {name};
-  return Folder.findByIdAndUpdate(id, {$set: updateFolder}, {new: true})
+  Folder.findByIdAndUpdate(id, {$set: updateFolder}, {new: true})
   // need new is true to get back updated version
     .then(folder => {
       if(folder){

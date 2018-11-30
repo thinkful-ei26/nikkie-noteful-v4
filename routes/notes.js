@@ -1,28 +1,30 @@
 'use strict';
 
 const express = require('express');
-const router = express.Router();
 const mongoose = require('mongoose');
+
 const Note = require('../models/note');
 
-/* ========== GET/READ ALL ITEMS ========== */
-router.get('/', (req, res, next) => {
-  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId 
+const router = express.Router();
 
-  const searchTerm = req.query.searchTerm;
-  const folderId = req.query.folderId;
+/* ========== GET/READ ALL NOTES ========== */
+router.get('/', (req, res, next) => {
+  const { searchTerm, folderId } = req.query;
+
   const filter = {}; 
 
   if (folderId) {
     filter.folderId =  folderId;
   }
+  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used?
+
 
   if (searchTerm) {
     const re = new RegExp(searchTerm, 'i');
     filter.$or = [{ 'title': re }, { 'content': re }];
   }
 
-  return Note.find(filter).sort({ updatedAt: 'desc' })
+  Note.find(filter).sort({ updatedAt: 'desc' })
     .then(notes => {
       res.json(notes);
     })
@@ -31,51 +33,62 @@ router.get('/', (req, res, next) => {
     });
 });
 
-/* ========== GET/READ A SINGLE ITEM ========== */
+/* ========== GET/READ A SINGLE NOTE ========== */
 router.get('/:id', (req, res, next) => {
-  const id = req.params.id;
+  const {id} = req.params;
 
+  // Dont trust client
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('The `id` is not valid');
     err.status = 400;
     return next(err);
   }
 
-  return Note.findById(id)
+  Note.findById(id)
     .then(notes => {
-      res.json(notes);
+      if(notes){
+        res.json(notes);
+      }
+      else{
+        next();
+      }
     })
     .catch(err => {
       next(err);
     });
-
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
   //Check if request contains a folderId and verify it is a valid Mongo ObjectId, if not valid respond with an error QUESTION: where wuold this be? in body or params? And it doesn't get saved to db with folderId bc we don't pass it in....should we? 
-  const folderId = req.body.folderId;
+  const { title, content, folderId } = req.body;
 
+  // if there's a folderid, make sure its a valid mongoose objectid
   if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
     const err = new Error('The `id` is not valid');
     err.status = 400;
     return next(err);
   }
 
-  const requiredFields = ['title', 'content'];
+  // Make sure user included title and content 
+  const requiredFields = [title, content];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`;
-      console.error(message);
-      return res.status(400).send(message);
+    console.log(req.body);
+    if (!field) {
+      const err = new Error ('Must have title and content!');
+      err.status = 400;
+      return next(err);
+      // QUESTION: shouldnt this validation be done on the client side? 
     }
   }
 
-  return Note.create({
-    title: req.body.title,
-    content: req.body.content  
-  })
+  const newNote = {title, content};
+  if (folderId){
+    newNote.folderId = folderId;
+  }
+
+  Note.create(newNote)
     .then(note => {
       res.location(`http://${req.headers.host}/api/notes/${note.id}`).status(201).json(note);
     })
@@ -86,27 +99,51 @@ router.post('/', (req, res, next) => {
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
-  const id = req.params.id;
-  const folderId = req.body.folderId;
+  const{ id }= req.params;
+  const { title, content, folderId } = req.body;
 
-  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+  // validate id
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('The `id` is not valid');
     err.status = 400;
     return next(err);
   }
 
-  const updatedObj = {};
-  const updateableFields = ['title', 'content'];
+  // validate folderid if there is one
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('The `folderId` is not valid');
+    err.status = 400;
+    return next(err);
+  }
 
-  updateableFields.forEach(field => {
-    if (field in req.body) {
-      updatedObj[field] = req.body[field];
+  // Make sure user included title and content 
+  const requiredFields = [title, content];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    console.log(req.body);
+    if (!field) {
+      const err = new Error ('Must have title and content!');
+      err.status = 400;
+      return next(err);
+      // QUESTION: shouldnt this validation be done on the client side? 
     }
-  });
+  }
 
-  return Note.findByIdAndUpdate(id, {$set: updatedObj}, {new: true})
+  //only want to put in the folderId if there is one or else it gets a cast error! QUESTION: didn't have a problem with this in post, but it does in put? 
+  // In the solution for the "PUT" Notes endpoint, it says "const updateNote = { title, content, folderId }". But if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, I changed the code to this: 
+  const updateNote = {title, content};
+  if (folderId){
+    updateNote.folderId = folderId;
+  }
+
+  Note.findByIdAndUpdate(id, updateNote, {new: true})
     .then(note => {
-      res.status(200).json(note);
+      if(note){
+        res.status(200).json(note);
+      }
+      else{
+        next();
+      }
     })
     .catch(err => {
       next(err);
@@ -128,6 +165,7 @@ router.delete('/:id', (req, res, next) => {
   Note.findByIdAndRemove(id)
     .then((note) => {
       if(!note){
+        // if trying to delete something that no longer exists or never did
         return next();
       }
       else{
