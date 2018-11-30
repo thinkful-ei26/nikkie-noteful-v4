@@ -63,6 +63,7 @@ app.use((err, req, res, next) => {
 
 //QUESTION: what's the diff with the above? we're not connecting to mongoose or listening to the app, but we use the app in our tests
 if (require.main === module) {
+  //  // Connect to DB and Listen for incoming connections
   mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
     .catch(err => {
       console.error(`ERROR: ${err.message}`);
