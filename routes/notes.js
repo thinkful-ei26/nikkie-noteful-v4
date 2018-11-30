@@ -101,7 +101,8 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const{ id }= req.params;
   const { title, content, folderId } = req.body;
-
+  console.log(req.body);
+  
   // validate id
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('The `id` is not valid');
@@ -131,6 +132,7 @@ router.put('/:id', (req, res, next) => {
 
   //only want to put in the folderId if there is one or else it gets a cast error! QUESTION: didn't have a problem with this in post, but it does in put? 
   // In the solution for the "PUT" Notes endpoint, it says "const updateNote = { title, content, folderId }". But if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, I changed the code to this: 
+  // Also why doesnt solution use set? Might only change a part 
   const updateNote = {title, content};
   if (folderId){
     updateNote.folderId = folderId;
