@@ -262,6 +262,7 @@ const noteful = (function () {
           return api.search('/api/folders');
         })
         .then(response => {
+          console.log(response);
           store.folders = response;
           render();
         })

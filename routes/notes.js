@@ -7,12 +7,20 @@ const Note = require('../models/note');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
+  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId 
+
   const searchTerm = req.query.searchTerm;
-  const re = new RegExp(searchTerm, 'i');
+  const folderId = req.query.folderId;
+  const filter = {}; 
 
-  let filter = {};
+  if (folderId) {
+    filter.folderId =  folderId;
+  }
 
-  filter.$or = [{ 'title': re }, { 'content': re }];
+  if (searchTerm) {
+    const re = new RegExp(searchTerm, 'i');
+    filter.$or = [{ 'title': re }, { 'content': re }];
+  }
 
   return Note.find(filter).sort({ updatedAt: 'desc' })
     .then(notes => {
@@ -45,6 +53,14 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
+  //Check if request contains a folderId and verify it is a valid Mongo ObjectId, if not valid respond with an error QUESTION: where wuold this be? in body or params? And it doesn't get saved to db with folderId bc we don't pass it in....should we? 
+  const folderId = req.body.folderId;
+
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('The `id` is not valid');
+    err.status = 400;
+    return next(err);
+  }
 
   const requiredFields = ['title', 'content'];
   for (let i=0; i<requiredFields.length; i++) {
@@ -71,6 +87,13 @@ router.post('/', (req, res, next) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
   const id = req.params.id;
+  const folderId = req.body.folderId;
+
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('The `id` is not valid');
+    err.status = 400;
+    return next(err);
+  }
 
   const updatedObj = {};
   const updateableFields = ['title', 'content'];
@@ -92,23 +115,28 @@ router.put('/:id', (req, res, next) => {
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
-router.delete('/:id', async (req, res, next) => {
-  const id = req.params.id;
+router.delete('/:id', (req, res, next) => {
+  const { id } = req.params;
 
-  //if the id isnt a valid mongoose id, then don't do findbyidanddelete 
+  /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('The `id` is not valid');
     err.status = 400;
     return next(err);
   }
 
-  const note = await Note.findByIdAndDelete(id);
-  if (!note){
-    return next();
-  }
-
-  // need to complete the above and then call a then or else it wont work
-  res.sendStatus(204);
+  Note.findByIdAndRemove(id)
+    .then((note) => {
+      if(!note){
+        return next();
+      }
+      else{
+        res.status(204).end();
+      }
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 module.exports = router;

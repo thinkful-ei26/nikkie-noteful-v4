@@ -1,5 +1,7 @@
 'use strict';
 
+// The purpose of this file is simply to seed the database when we're testing locally and on Travis 
+
 const notes = [
   {
     _id: '000000000000000000000000',
@@ -71,4 +73,4 @@ const folders = [
 ];
 
 module.exports = { notes, folders };
-//QUESTION: why are the keys in quotes too? They dont have to be, do they?
+//why are the keys in quotes too? They dont have to be, do they? doesnt matter in js, would matter if json file - in which case would have to make it double quotes
