@@ -55,7 +55,7 @@ router.post('/', (req,res,next)=>{
   let {name} = req.body;
 
   if(name){
-    name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
+    // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
   }
   else{
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
@@ -94,7 +94,7 @@ router.put('/:id',(req,res,next)=>{
   }
 
   if(name){
-    name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
+    // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
   }
   else{
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
@@ -140,14 +140,14 @@ router.delete('/:id', (req, res, next) => {
 
   // Don't delete the notes associated with the tag to be deleted, but just remove the tag from the tags array
   const noteTagPullPromise = Note.updateMany(
-    {},
+    { tags: id },
     { $pull: { tags: id } }
   );
 
   // delete the folder and update the notes in parallel using .all
   Promise.all([tagRemovePromise, noteTagPullPromise])
     .then((tag) => {
-      // We want to make sure that it doesn't try to delete a folder that no longer exists or never existed. To prevent that, we need to check this: 
+      // We want to make sure that it doesn't try to delete a tag that no longer exists or never existed. To prevent that, we need to check this: 
       if(tag[0]!==null){
         res.status(204).end();
       }

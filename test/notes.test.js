@@ -9,7 +9,8 @@ const {TEST_MONGODB_URI } = require('../config');
 
 const Note = require('../models/note');
 const Folder = require('../models/folder');
-const { notes, folders } = require('../db/seed/data');
+const Tag = require('../models/tags');
+const { notes, folders, tags } = require('../db/seed/data');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
@@ -26,11 +27,11 @@ describe('Notes API tests', function(){
     //populate the db before each test 
     return Promise.all([
       Note.insertMany(notes),
-      Folder.insertMany(folders)
-    ])
-      .then(() => {
-        return Note.createIndexes();
-      });
+      Folder.insertMany(folders),
+      Tag.insertMany(tags),
+      Folder.createIndexes(),
+      Tag.createIndexes()
+    ]);
   });
 
   afterEach(function () {
@@ -73,6 +74,7 @@ describe('Notes API tests', function(){
 
           res.body.forEach(function(note, i ) {
             expect(note).to.be.a('object');
+            //folderId and tags are optional
             expect(note).to.include.keys(
               'title', 'content', 'id', 'createdAt', 'updatedAt');
             // make sure each note's properties matches the db's properties
@@ -103,7 +105,7 @@ describe('Notes API tests', function(){
           expect(res.body).to.have.length(1);
           res.body.forEach(function (note, i) {
             expect(note).to.be.a('object');
-            expect(note).to.include.all.keys('id', 'title', 'createdAt', 'updatedAt');
+            expect(note).to.include.keys('id', 'title', 'createdAt', 'updatedAt');
             expect(note.id).to.equal(db[i].id);
             expect(note.title).to.equal(db[i].title);
             expect(note.content).to.equal(db[i].content);
@@ -121,6 +123,25 @@ describe('Notes API tests', function(){
           return Promise.all([
             Note.find({ folderId: data.id }),
             chai.request(app).get(`/api/notes?folderId=${data.id}`)
+          ]);
+        })
+        .then(([db, res]) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('array');
+          expect(res.body).to.have.length(db.length);
+        });
+    });
+
+    it('should return correct search results for a tagId query', function () {
+      let data;
+      return Tag.findOne()
+        .then((_data) => {
+          data = _data;
+          console.log('dataId is', data.id);
+          return Promise.all([
+            Note.find({ tags: data.id }),
+            chai.request(app).get(`/api/notes?tagId=${data.id}`)
           ]);
         })
         .then(([db, res]) => {
@@ -163,7 +184,7 @@ describe('Notes API tests', function(){
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.an('object');
-          expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'folderId');
+          expect(res.body).to.include.keys('id', 'title', 'content', 'createdAt', 'updatedAt');
 
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
@@ -266,7 +287,7 @@ describe('Notes API tests', function(){
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           console.log(res.body);
-          expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'folderId');
+          expect(res.body).to.include.keys('id', 'title', 'content', 'createdAt', 'updatedAt');
 
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(updateItem.title);

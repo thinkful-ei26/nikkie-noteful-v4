@@ -13,14 +13,15 @@ router.get('/', (req, res, next) => {
 
   const filter = {}; 
 
+  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used? When user clicks folder and wants to see notes in that folder?...YES look at network for the requests you'll see. Same with tags.
+
   if (folderId) {
     filter.folderId =  folderId;
   }
 
   if(tagId){
     filter.tags =  tagId;
-  } //QUUESTION: WHY NOT filter.tagId = tagId 
-  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used? When user clicks folder and wants to see notes in that folder?...YES look at network for the requests you'll see. Same with tags.
+  } //Question: Why doesn't filter.tagId = tagId? Because tags is how it's written in the db. tagId is how the client sends it 
 
 
   if (searchTerm) {
@@ -156,20 +157,16 @@ router.put('/:id', (req, res, next) => {
     }
   }
 
-  //only want to put in the folderId if there is one or else it gets a cast error! QUESTION: didn't have a problem with this in post, but it does in put? 
-  // In the solution for the "PUT" Notes endpoint, it says "const updateNote = { title, content, folderId }". But if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, I changed the code to this: 
+  //only want to put in the folderId if there is one or else it gets a cast error!
+  //if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, we can do: 
   const updateNote = {title, content, tags};
   if (folderId){
     updateNote.folderId = folderId;
   }
-
-  // but also user might want to change from a folder to no folder. account for that
-  if (folderId === ''){
-    delete updateNote.folderId;
+  else{
+    // if the user is trying to go from a folder to no folder, we need to account for that:
     updateNote.$unset = {folderId: ''};
-  } 
-  // LOOK MORE INTO THIS^
-
+  }
 
   Note.findByIdAndUpdate(id, updateNote, {new: true})
     .then(note => {

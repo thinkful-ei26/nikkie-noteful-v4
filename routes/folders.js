@@ -51,7 +51,7 @@ router.post('/', (req, res, next) => {
   let {name} = req.body;
 
   if(name){
-    name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the folder name to upper case so it gets sorted properly later
+    // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the folder name to upper case so it gets sorted properly later
   }
   else{
     //this error should be displayed to user incase they forget to add a folder name. Dont trust user!
