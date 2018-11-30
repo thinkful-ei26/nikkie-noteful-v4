@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const noteSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: String,
-  folderId:{type: mongoose.Schema.Types.ObjectId, ref: 'Folder'} //references folder model. How if we didn't import it? It's on the mongo level -- accessing the folders collection. dont need to import
+  folderId:{type: mongoose.Schema.Types.ObjectId, ref: 'Folder'}, //references folder model. How if we didn't import it? It's on the mongo level -- accessing the folders collection. dont need to import
+  tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}]
 });
 
 // Add `createdAt` and `updatedAt` fields
