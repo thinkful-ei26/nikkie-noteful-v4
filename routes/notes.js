@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
   if (folderId) {
     filter.folderId =  folderId;
   }
-  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used? When user clicks folder and wants to see notes in that folder?...
+  // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used? When user clicks folder and wants to see notes in that folder?...YES look at network for the requests you'll see
 
 
   if (searchTerm) {
@@ -60,7 +60,7 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  //Check if request contains a folderId and verify it is a valid Mongo ObjectId, if not valid respond with an error QUESTION: where wuold this be? in body or params? And it doesn't get saved to db with folderId bc we don't pass it in....should we? 
+  //Check if request contains a folderId and verify it is a valid Mongo ObjectId, if not valid respond with an error
   const { title, content, folderId } = req.body;
 
   // if there's a folderid, make sure its a valid mongoose objectid
@@ -132,11 +132,18 @@ router.put('/:id', (req, res, next) => {
 
   //only want to put in the folderId if there is one or else it gets a cast error! QUESTION: didn't have a problem with this in post, but it does in put? 
   // In the solution for the "PUT" Notes endpoint, it says "const updateNote = { title, content, folderId }". But if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, I changed the code to this: 
-  // Also why doesnt solution use set? Might only change a part 
   const updateNote = {title, content};
   if (folderId){
     updateNote.folderId = folderId;
   }
+
+  // but also user might want to change from a folder to no folder. account for that
+  if (folderId === ''){
+    delete updateNote.folderId;
+    updateNote.$unset = {folderId: ''};
+  } 
+  // LOOK MORE INTO THIS^
+
 
   Note.findByIdAndUpdate(id, updateNote, {new: true})
     .then(note => {

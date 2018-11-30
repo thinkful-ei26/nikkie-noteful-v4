@@ -265,6 +265,7 @@ describe('Notes API tests', function(){
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
+          console.log(res.body);
           expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'folderId');
 
           expect(res.body.id).to.equal(data.id);
@@ -363,3 +364,4 @@ describe('Notes API tests', function(){
   });
 });
 
+// ADD IN TESTS FOR folderId vs no folderId 
