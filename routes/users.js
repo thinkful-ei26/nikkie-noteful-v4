@@ -14,12 +14,9 @@ router.post('/', (req,res,next) => {
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: `Missing ${missingField}`,
-      location: missingField
-    });
+    const err = new Error(`Missing '${missingField}' in request body`);
+    err.status = 422;
+    return next(err);
   }
 
   const stringFields = ['username', 'password', 'firstName', 'lastName'];
@@ -28,12 +25,9 @@ router.post('/', (req,res,next) => {
   );
 
   if (nonStringField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Incorrect field type: expected string',
-      location: nonStringField
-    });
+    const err = new Error('Incorrect field type: expected string');
+    err.status = 422;
+    return next(err);
   }
 
   // If the username and password aren't trimmed we give an error.  Users might expect that these will work without trimming (i.e. they want the password "foobar ", including the space at the end).  We need to reject such values explicitly so the users know what's happening, rather than silently trimming them and expecting the user to understand.
@@ -44,12 +38,9 @@ router.post('/', (req,res,next) => {
   );
 
   if (nonTrimmedField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Cannot start or end with whitespace',
-      location: nonTrimmedField
-    });
+    const err = new Error('Cannot start or end with whitespace');
+    err.status = 422;
+    return next(err);
   }
 
   const sizedFields = {
@@ -74,16 +65,15 @@ router.post('/', (req,res,next) => {
   );
 
   if (tooSmallField || tooLargeField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: tooSmallField
-        ? `Must be at least ${sizedFields[tooSmallField]
-          .min} characters long`
-        : `Must be at most ${sizedFields[tooLargeField]
-          .max} characters long`,
-      location: tooSmallField || tooLargeField
-    });
+    const message = tooSmallField
+      ? `Must be at least ${sizedFields[tooSmallField]
+        .min} characters long`
+      : `Must be at most ${sizedFields[tooLargeField]
+        .max} characters long`;
+
+    const err = new Error(message);
+    err.status = 422;
+    return next(err);
   }
   const {fullname = '', username, password} = req.body;
   return User.hashPassword(password)
