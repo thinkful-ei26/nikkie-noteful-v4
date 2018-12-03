@@ -4,12 +4,18 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 
+const passport = require('passport');
+const localStrategy = require('./passport/local');
+
 const { PORT, MONGODB_URI } = require('./config');
 
 const notesRouter = require('./routes/notes');
 const foldersRouter = require('./routes/folders'); 
 const tagsRouter = require('./routes/tags'); 
 const usersRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
+
+
 
 // Create an Express application
 const app = express();
@@ -25,11 +31,16 @@ app.use(express.static('public'));
 // Parse request body
 app.use(express.json());
 
+//Configure Passport to utilize the strategy
+//// QUESTION: why do we need to import localstrategy into server.js?...Why is it needed here? 
+passport.use(localStrategy);
+
 // Mount routers
 app.use('/api/notes', notesRouter);
 app.use('/api/folders', foldersRouter);
 app.use('/api/tags', tagsRouter);
-app.use('/api/users', usersRouter); //solution didnt mount it this way, why? 
+app.use('/api/users', usersRouter);
+app.use('/api/login', authRouter);
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
@@ -49,23 +60,6 @@ app.use((err, req, res, next) => {
   }
 });
 
-// Listen for incoming connections
-// if (process.env.NODE_ENV !== 'test') {
-//   mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
-//     .catch(err => {
-//       console.error(`ERROR: ${err.message}`);
-//       console.error('\n === Did you remember to start `mongod`? === \n');
-//       console.error(err);
-//     });
-
-//   app.listen(PORT, function () {
-//     console.info(`Server listening on ${this.address().port}`);
-//   }).on('error', err => {
-//     console.error(err);
-//   });
-// }
-
-//QUESTION: what's the diff with the above? we're not connecting to mongoose or listening to the app, but we use the app in our tests
 if (require.main === module) {
   //  // Connect to DB and Listen for incoming connections
   mongoose.connect(MONGODB_URI, { useNewUrlParser:true })

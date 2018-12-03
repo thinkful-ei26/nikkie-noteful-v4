@@ -27,12 +27,16 @@ const localStrategy = new LocalStrategy((username, password, done) => {
           location: 'password'
         });
       }
-      return done(null, user);
+      return done(null, user); //no error, valid user
     })
     .catch(err => {
       if (err.reason === 'LoginError') {
-        return done(null, false); //QUESTION dont really get this here
+        return done(null, false); //QUESTION dont really get this here. Above, we reject a promise by throwing an error - its not a crash, but the user is not logged in. And thats signaled by saying there's no error, but there is no user. Sends a message (and bc we have failwitherror, its going to send it in json)
       }
-      return done(err);
+      return done(err); //if theres an internal error
     });
 });
+
+module.exports = localStrategy;
+
+//JWT will actually protect our endpoints
