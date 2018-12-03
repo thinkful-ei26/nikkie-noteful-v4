@@ -9,16 +9,25 @@ const router = express.Router();
 
 // POST endpoint to create a user//
 // The endpoint creates a new user in the database and responds with a 201 status, a location header and a JSON representation of the user without the password.
-//Note, you will add input validation later in the challenge, after adding Bcryptjs. For now, focus on creating the ability to insert a new user.
 router.post('/', (req,res,next) => {
   const {fullname = '', username, password} = req.body;
-  const newUser = {fullname, username, password};
-  User.create(newUser)
-    .then(user => {
-      console.log('HERE');
-      return res.status(201).location(`http://${req.headers.host}/api/users/${user.id}`).json(user);
+  return User.hashPassword(password)
+    .then(digest => {
+      const newUser = {
+        username,
+        password: digest,
+        fullname
+      };
+      return User.create(newUser);
     })
-    .catch(err=>{
+    .then(result => {
+      return res.status(201).location(`http://${req.headers.host}/api/folders//${result.id}`).json(result);
+    })
+    .catch(err => {
+      if (err.code === 11000) {
+        err = new Error('The username already exists');
+        err.status = 400;
+      }
       next(err);
     });
 });

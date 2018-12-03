@@ -1,6 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   fullname: String,
@@ -19,8 +20,13 @@ userSchema.set('toJSON', {
 });
 
 userSchema.methods.validatePassword = function(incomingPassword){
-  return incomingPassword === this.password; 
+  return bcrypt.compare(incomingPassword, this.password); //order makes a difference
   //this refers to a specific instance aka a specific user
+};
+
+userSchema.statics.hashPassword = function(incomingPassword){
+  const digest = bcrypt.hash(incomingPassword, 10); //10 says how many rounds of salting we should implement
+  return digest;
 };
 
 const User = mongoose.model('User', userSchema);

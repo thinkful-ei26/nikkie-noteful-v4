@@ -52,6 +52,9 @@ app.use((req, res, next) => {
 // Custom Error Handler
 app.use((err, req, res, next) => {
   if (err.status) {
+    if(err.status ===401){
+      err.message = 'Incorrect username or password';
+    }
     const errBody = Object.assign({}, err, { message: err.message });
     res.status(err.status).json(errBody);
   } else {
@@ -62,7 +65,7 @@ app.use((err, req, res, next) => {
 
 if (require.main === module) {
   //  // Connect to DB and Listen for incoming connections
-  mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
+  mongoose.connect(MONGODB_URI, { useNewUrlParser:true }) //Mongo will automatically create the db here if it doesnt exist, and then mongoose will automatically create any collections that dont already exist by going through your models
     .catch(err => {
       console.error(`ERROR: ${err.message}`);
       console.error('\n === Did you remember to start `mongod`? === \n');
