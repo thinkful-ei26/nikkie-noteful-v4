@@ -18,6 +18,11 @@ userSchema.set('toJSON', {
   }
 });
 
+userSchema.methods.validatePassword = function(incomingPassword){
+  return incomingPassword === this.password; 
+  //this refers to a specific instance aka a specific user
+};
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
