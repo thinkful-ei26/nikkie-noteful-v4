@@ -14,13 +14,7 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-const passport = require('passport');
-
-//QUESTION: clarify what the two lines below do 
-const options = {session: false, failWithError: true}; //instead of sending a response, it'll throw an error if theres a auth error - text body vs json body 
-const localAuth = passport.authenticate('local', options); //this is going to use local auth (tomorrow will be jwt)
-
-router.post('/login', localAuth, function (req, res) {
+router.post('/', function (req, res) {
   const authToken = createAuthToken(req.user); //contains password but toJSON() will get rid of it 
   return res.json({authToken});
 });
