@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-const mongoose = require('mongoose');
 
 const User = require('../models/user');
 
@@ -19,7 +18,7 @@ router.post('/', (req,res,next) => {
     return next(err);
   }
 
-  const stringFields = ['username', 'password', 'firstName', 'lastName'];
+  const stringFields = ['username', 'password', 'fullname'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
