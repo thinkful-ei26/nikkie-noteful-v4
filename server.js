@@ -45,6 +45,7 @@ app.use('/api/folders', jwtAuth, foldersRouter);
 app.use('/api/tags', jwtAuth, tagsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', localAuth, authRouter); //for login
+app.use('/api', jwtAuth, authRouter); //for refresh
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
