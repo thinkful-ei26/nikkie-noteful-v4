@@ -5,8 +5,9 @@ const { MONGODB_URI } = require('../config');
 const Note = require('../models/note');
 const Folder = require('../models/folder');
 const Tag = require('../models/tags');
+const User = require('../models/user');
 
-const { notes, folders, tags } = require('../db/seed/data');
+const { notes, folders, tags, users } = require('../db/seed/data');
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
   .then(() => mongoose.connection.db.dropDatabase())
@@ -15,6 +16,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
       Note.insertMany(notes),
       Folder.insertMany(folders),
       Tag.insertMany(tags),
+      User.insertMany(users),
       Folder.createIndexes(),//tells Mongo to index the Folders data immediately. The index is used to enforce the unique folder names rule you created in the schema. Normally, the index is automatically created in the background. But that leaves open a small window of time when you could, in theory, seed the database and then create a folder with a duplicate name. Calling createIndexes() forces Mongo to create the index and prevents error from happening.
       Tag.createIndexes()
     ]);

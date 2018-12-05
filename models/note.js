@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 
 const noteSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
   content: String,
   folderId:{type: mongoose.Schema.Types.ObjectId, ref: 'Folder'}, //references folder model. How if we didn't import it? It's on the mongo level -- accessing the folders collection. dont need to import
