@@ -7,8 +7,9 @@ const User = require('../models/user');
 const router = express.Router();
 
 // POST endpoint to create a user//
-// The endpoint creates a new user in the database and responds with a 201 status, a location header and a JSON representation of the user without the password.
 router.post('/', (req,res,next) => {
+
+  //First do a ton of validation 
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -29,8 +30,8 @@ router.post('/', (req,res,next) => {
     return next(err);
   }
 
-  // If the username and password aren't trimmed we give an error.  Users might expect that these will work without trimming (i.e. they want the password "foobar ", including the space at the end).  We need to reject such values explicitly so the users know what's happening, rather than silently trimming them and expecting the user to understand.
-  // We'll silently trim the other fields, because they aren't credentials used to log in, so it's less of a problem.
+  // If the username and password aren't trimmed we give an error.  Users might expect that these will work without trimming. We need to reject such values explicitly so the users know what's happening, rather than silently trimming them and expecting the user to understand.
+  // We'll silently trim the other fields, because they aren't credentials used to log in, so it's less of a problem. QUESTION: where do we actually do
   const explicityTrimmedFields = ['username', 'password'];
   const nonTrimmedField = explicityTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
@@ -85,6 +86,7 @@ router.post('/', (req,res,next) => {
       return User.create(newUser);
     })
     .then(result => {
+      // The endpoint creates a new user in the database and responds with a 201 status, a location header and a JSON representation of the user without the password.
       return res.status(201).location(`http://${req.headers.host}/api/folders//${result.id}`).json(result);
     })
     .catch(err => {

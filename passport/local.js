@@ -1,6 +1,6 @@
 'use strict';
 
-//create Passport Local Strategy that finds the user and validates the password. For now you will compare the plain-text passwords, later you will had bcryptjs to hash and compare the password.
+//Passport Local Strategy that finds the user and validates the password. 
 
 //Require passport-local in the file and set the Strategy property to a local variable named LocalStrategy using object destructuring.
 const { Strategy: LocalStrategy } = require('passport-local');
@@ -19,7 +19,6 @@ const localStrategy = new LocalStrategy((username, password, done) => {
           location: 'username'
         });
       }
-      console.log(user);
       return user.validatePassword(password);
     })
     .then(isValid => {
@@ -30,16 +29,16 @@ const localStrategy = new LocalStrategy((username, password, done) => {
           location: 'password'
         });
       }
-      return done(null, user); //no error, valid user
+      return done(null, user); //no error, valid user. login success - sets `req.user = user` which will be used later to assign the user a token 
     })
     .catch(err => {
       if (err.reason === 'LoginError') {
-        return done(null, false); //QUESTION dont really get this here. Above, we reject a promise by throwing an error - its not a crash, but the user is not logged in. And thats signaled by saying there's no error, but there is no user. Sends a message (and bc we have failwitherror, its going to send it in json)
+        return done(null, false); //no error, but invalid user - jump to our error handler (bc we said failWithError:true)
       }
-      return done(err); //if theres an internal error
+      return done(err); //if theres an internal error, jump to our error handler
     });
 });
 
 module.exports = localStrategy;
 
-//JWT will actually protect our endpoints
+//JWT will actually protect our endpoints, LocalAuth is just for the login endpoint 

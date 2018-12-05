@@ -35,7 +35,7 @@ passport.use(localStrategy);
 passport.use(jwtStrategy);
 
 //we include this here so we don't have to for every single router endpoint
-const options = {session: false, failWithError: true}; //instead of sending a text response, it'll throw an error if theres an auth error as a JSON body obj (better to be consistant so fron-end devs can easily handle errors)
+const options = {session: false, failWithError: true};
 const jwtAuth = passport.authenticate('jwt', options);
 const localAuth = passport.authenticate('local', options);
 
@@ -46,6 +46,8 @@ app.use('/api/tags', jwtAuth, tagsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', localAuth, authRouter); //for login
 app.use('/api', jwtAuth, authRouter); //for refresh
+//Any endpoint that passes the jwtAuth strategy and is validted: The `req.user` has a value now because of `done(null, payload.user)` in JWT Strategy
+
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
