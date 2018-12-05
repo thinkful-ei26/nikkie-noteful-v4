@@ -11,7 +11,8 @@ const router = express.Router();
 
 /* ========== GET/READ ALL Tags ========== */
 router.get('/', (req,res,next)=>{
-  Tag.find().sort({name:'asc'})
+  const userId = req.user.id;
+  Tag.find({userId}).sort({name:'asc'})
     .then(tags=>{
       if(tags){
         res.json(tags);
@@ -28,6 +29,7 @@ router.get('/', (req,res,next)=>{
 /* ========== GET/READ A SINGLE TAG ========== */
 router.get('/:id', (req,res,next)=>{
   const {id} = req.params;
+  const userId = req.user.id;
 
   // make sure the id is a valid mongoose type
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -36,7 +38,7 @@ router.get('/:id', (req,res,next)=>{
     return next(err);
   }
 
-  Tag.findById(id)
+  Tag.findOne({_id:id, userId})
     .then(tag=>{
       if(tag){
         res.status(200).json(tag);
@@ -53,6 +55,7 @@ router.get('/:id', (req,res,next)=>{
 /* ========== POST/CREATE A TAG ========== */
 router.post('/', (req,res,next)=>{
   let {name} = req.body;
+  const userId = req.user.id;
 
   if(name){
     // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
@@ -64,7 +67,7 @@ router.post('/', (req,res,next)=>{
     return next(err);
   }
 
-  const newTag = {name};
+  const newTag = {name, userId};
 
   Tag.create(newTag)
     .then(tag=>{
@@ -85,6 +88,7 @@ router.put('/:id',(req,res,next)=>{
 
   let {name} = req.body;
   let {id} = req.params;
+  const userId = req.user.id;
 
   // make sure the id is a valid mongoose type
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -103,7 +107,7 @@ router.put('/:id',(req,res,next)=>{
     return next(err);
   }
 
-  const updateTag = {name};
+  const updateTag = {name, userId};
 
   Tag.findByIdAndUpdate(id, {$set: updateTag}, {new:true})
     .then(tag=>{
@@ -127,6 +131,7 @@ router.put('/:id',(req,res,next)=>{
 /* ========== DELETE/REMOVE A SINGLE TAG AND REMOVE IT FROM NOTE TAG ARRAY ========== */
 router.delete('/:id', (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -136,7 +141,7 @@ router.delete('/:id', (req, res, next) => {
   }
 
   //remove the tag
-  const tagRemovePromise = Tag.findByIdAndRemove( id );
+  const tagRemovePromise = Tag.findOneAndDelete({_id:id, userId});
 
   // Don't delete the notes associated with the tag to be deleted, but just remove the tag from the tags array
   const noteTagPullPromise = Note.updateMany(
