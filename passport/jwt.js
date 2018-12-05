@@ -24,3 +24,5 @@ const jwtStrategy = new JwtStrategy(options, (payload, done) => {
 });
 
 module.exports = jwtStrategy; 
+
+// Strategy looks at header, grabs the token, and then calls .verify, and the output of that is the payload. and then it calls our callback fn with that payload and the done fn. Look at screenshot 
