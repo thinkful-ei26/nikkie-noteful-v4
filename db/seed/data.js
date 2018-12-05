@@ -74,8 +74,18 @@ const notes = [
 
 const folders = [
   {
+    _id: '222222222222222222222201',
+    name: 'Archive',
+    userId: '000000000000000000000001'
+  },
+  {
     _id: '222222222222222222222203',
     name: 'Drafts',
+    userId: '000000000000000000000001'
+  },
+  {
+    _id: '222222222222222222222205',
+    name: 'Personal',
     userId: '000000000000000000000001'
   },
   {
@@ -155,12 +165,14 @@ const users = [
     _id: '000000000000000000000001',
     fullname: 'Ms Green',
     username: 'msgreen',
+    // hash for "password"
     password: '$2a$10$QJCIX42iD5QMxLRgHHBJre2rH6c6nI24UysmSYtkmeFv6X8uS1kgi'
   },
   {
     _id: '000000000000000000000002',
     fullname: 'Mr Yellow',
     username: 'mryellow',
+    // hash for "password"
     password: '$2a$10$QJCIX42iD5QMxLRgHHBJre2rH6c6nI24UysmSYtkmeFv6X8uS1kgi'
   }
 ];
