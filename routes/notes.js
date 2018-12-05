@@ -233,8 +233,10 @@ router.put('/:id', (req, res, next) => {
     validateFolder(folderId, userId),
     validateTags(tags, userId)
   ])
-    .then(()=> Note.findByIdAndUpdate(id, updateNote, {new: true}))
+    .then(()=> Note.findOneAndUpdate({_id: id, userId: userId}, updateNote, {new: true}))
     .then(note => {
+      console.log('THE NOTE IS ', note);
+      console.log('THIS USERS ID IS ', userId);
       if(note){
         res.status(200).json(note);
       }
