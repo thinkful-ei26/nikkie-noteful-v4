@@ -7,11 +7,15 @@ const Note = require('../models/note');
 
 const router = express.Router();
 
+//Next, update the /notes endpoints to ensure that a user can only interact with their own notes.
+//In each endpoint, capture the current user id from req.user and update the query. Note, you may need to change the Mongoose method. 
+
 /* ========== GET/READ ALL NOTES ========== */
 router.get('/', (req, res, next) => {
   const { searchTerm, folderId, tagId } = req.query;
+  const userId = req.user.id;
 
-  const filter = {}; 
+  const filter = {userId}; //filter obj def needs at least this in it
 
   // Check if request contains folderId in the querystring and add a filter which to find notes with the given folderId QUESTION when is this used? When user clicks folder and wants to see notes in that folder?...YES look at network for the requests you'll see. Same with tags.
 
@@ -43,6 +47,7 @@ router.get('/', (req, res, next) => {
 /* ========== GET/READ A SINGLE NOTE ========== */
 router.get('/:id', (req, res, next) => {
   const {id} = req.params;
+  const userId = req.user.id;
 
   // Dont trust client
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -51,7 +56,7 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  Note.findById(id)
+  Note.findOne({_id: id, userId: userId})
     .populate('tags')
     .then(notes => {
       if(notes){
@@ -70,6 +75,7 @@ router.get('/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
   //Check if request contains a folderId and verify it is a valid Mongo ObjectId, if not valid respond with an error
   const { title, content, folderId, tags =[] } = req.body;
+  const userId = req.user.id;
 
   // if there's a folderid, make sure its a valid mongoose objectid
   if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
@@ -99,7 +105,7 @@ router.post('/', (req, res, next) => {
     }
   }
 
-  const newNote = {title, content};
+  const newNote = {title, content, userId};
   if (folderId){
     newNote.folderId = folderId;
   }
@@ -120,6 +126,7 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const{ id }= req.params;
   const { title, content, folderId, tags =[] } = req.body;
+  const userId = req.user.id;
   
   // validate id
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -159,13 +166,21 @@ router.put('/:id', (req, res, next) => {
 
   //only want to put in the folderId if there is one or else it gets a cast error!
   //if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, we can do: 
-  const updateNote = {title, content, tags};
+  const updateNote = {title, content, userId};
   if (folderId){
     updateNote.folderId = folderId;
   }
   else{
     // if the user is trying to go from a folder to no folder, we need to account for that:
     updateNote.$unset = {folderId: ''};
+  }
+
+  if (tags){
+    updateNote.tags = tags;
+  }
+  else{
+    // if the user is trying to go from tags to no tags, we need to account for that:
+    updateNote.$unset = {tags: []};
   }
 
   Note.findByIdAndUpdate(id, updateNote, {new: true})
@@ -186,6 +201,7 @@ router.put('/:id', (req, res, next) => {
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
 
   /***** Never trust users - validate input *****/
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -194,7 +210,7 @@ router.delete('/:id', (req, res, next) => {
     return next(err);
   }
 
-  Note.findByIdAndRemove(id)
+  Note.findOneAndDelete({_id:id, userId: userId})
     .then((note) => {
       if(!note){
         // if trying to delete something that no longer exists or never did
