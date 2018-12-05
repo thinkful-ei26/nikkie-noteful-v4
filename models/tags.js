@@ -7,6 +7,8 @@ const tagSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 });
 
+tagSchema.index({name: 1, userId: 1}, {unique:true}); // tag names should be unique for each user. The solution is to use compound indexes.
+
 //adds createdAt and updatedAt fields
 tagSchema.set('timestamps', true);
 
