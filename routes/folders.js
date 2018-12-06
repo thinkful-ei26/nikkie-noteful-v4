@@ -11,7 +11,7 @@ const router = express.Router();
 /* ========== GET/READ ALL Folders ========== */
 router.get('/', (req, res, next) => {
   const userId = req.user.id;
-  Folder.find({userId}).sort({name: 'asc'})
+  Folder.find({userId}).sort('name')
     .then(folders => {
       res.json(folders);
     })
@@ -22,7 +22,7 @@ router.get('/', (req, res, next) => {
 
 /* ========== GET/READ A SINGLE FOLDER ========== */
 router.get('/:id', (req, res, next) => {
-  const id = req.params.id;
+  const {id} = req.params;
   const userId = req.user.id;
 
   // make sure the id is a valid mongoose type
@@ -53,9 +53,6 @@ router.post('/', (req, res, next) => {
   let {name} = req.body;
   const userId = req.user.id;
 
-  // if(name){
-  //   // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the folder name to upper case so it gets sorted properly later
-  // }
   if(!name){
     //this error should be displayed to user incase they forget to add a folder name. Dont trust user!
     const err = new Error('Missing name for the folder!');
@@ -99,8 +96,8 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateFolder = {name, userId};
-  Folder.findByIdAndUpdate(id, updateFolder, {new: true}) 
+  const updateFolder = {name};
+  Folder.findOneAndUpdate({_id:id, userId: userId}, updateFolder, {new: true}) 
   // need new is true to get back updated version
     .then(folder => {
       if(folder){
@@ -139,7 +136,7 @@ router.delete('/:id', (req, res, next) => {
 
   // Don't delete the notes associated with the folder to be deleted, but just remove their folderIds
   const noteRemovePromise = Note.updateMany(
-    { folderId: id },
+    { folderId: id, userId },
     { $unset: { folderId: '' } }
   );
 

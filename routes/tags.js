@@ -3,7 +3,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const Folder = require('../models/folder');
 const Note = require('../models/note');
 const Tag = require('../models/tags');
 
@@ -12,7 +11,8 @@ const router = express.Router();
 /* ========== GET/READ ALL Tags ========== */
 router.get('/', (req,res,next)=>{
   const userId = req.user.id;
-  Tag.find({userId}).sort({name:'asc'})
+
+  Tag.find({userId}).sort('name')
     .then(tags=>{
       if(tags){
         res.json(tags);
@@ -57,9 +57,6 @@ router.post('/', (req,res,next)=>{
   let {name} = req.body;
   const userId = req.user.id;
 
-  // if(name){
-  //   // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
-  // }
   if(!name){
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
     const err = new Error('Missing name for the tag!');
@@ -97,10 +94,7 @@ router.put('/:id',(req,res,next)=>{
     return next(err);
   }
 
-  if(name){
-    // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
-  }
-  else{
+  if(!name){
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
     const err = new Error('Missing name for the tag!');
     err.status = 400;
@@ -109,7 +103,7 @@ router.put('/:id',(req,res,next)=>{
 
   const updateTag = {name, userId};
 
-  Tag.findByIdAndUpdate(id, updateTag, {new:true})
+  Tag.findOneAndUpdate({_id:id, userId: userId}, updateTag, {new: true}) 
     .then(tag=>{
       if(tag){
         res.status(200).json(tag);
@@ -145,7 +139,7 @@ router.delete('/:id', (req, res, next) => {
 
   // Don't delete the notes associated with the tag to be deleted, but just remove the tag from the tags array
   const noteTagPullPromise = Note.updateMany(
-    { tags: id },
+    { tags: id, userId },
     { $pull: { tags: id } }
   );
 

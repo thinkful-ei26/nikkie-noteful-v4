@@ -19,6 +19,7 @@ userSchema.set('toJSON', {
   }
 });
 
+//Use `function` (not an `arrow function`) to allow setting `this`
 userSchema.methods.validatePassword = function(incomingPassword){
   return bcrypt.compare(incomingPassword, this.password); //order makes a difference
   //this refers to a specific instance aka a specific user

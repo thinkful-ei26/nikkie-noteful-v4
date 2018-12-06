@@ -9,38 +9,41 @@ const Tag = require('../models/tags');
 
 const router = express.Router();
 
-//Below are two functions that return true or false when verifing that the incoming note's folder id and tags belong to the current user before updating the database.
-
-// if there's a folderid, make sure its a valid mongoose objectid AND that it passes the validateFolder test - if either of these fail, need to return a 400
-
-//validate folder has to return a promise instead of a boolean.
-
-//use a for loop instead, or else the return statement will break out of the current function, which in this case is forEach  
+//Below are two functions that return promises when verifing that the incoming note's folder id and tags belong to the current user before updating the database. Remember, return statements will break out of the current function it's in.
 
 function validateFolder(folderId, userId){
   //make sure the user has access to this folder by looking in the folders collection and seeing if this folder is associated with this id:
-  const filter = {_id: folderId, userId};
 
   if(!folderId){
     return Promise.resolve(); //if there isnt even a folder, move on 
   }
 
+  // if there's a folderid, make sure its a valid mongoose objectid AND that it passes the validateFolder test - if either of these fail, need to return a 400
+
   if (!mongoose.Types.ObjectId.isValid(folderId)) {
-    const err = new Error('The `folderId` is not valid');
-    err.status = 400;
-    return Promise.reject(err);
+    //user error, so send more info, not an error stack trace
+    return Promise.reject({
+      reason: 'ValidationError',
+      status: 400,
+      message: 'The `folderId` is not valid',
+      location: 'validating tags'
+    });
   }
+
+  const filter = {_id: folderId, userId};
 
   return Folder.find(filter) //dont forget to return the promise
     .then(results=>{
-      console.log('THE RESULTS  ARE',results);
       if(results.length>0){
-        return Promise.resolve(); //is this okay?
+        return Promise.resolve();
       }
       else{
-        const err = new Error('The `folderId` is not valid');
-        err.status = 400;
-        return Promise.reject(err);
+        return Promise.reject({
+          reason: 'ValidationError',
+          status: 400,
+          message: 'The `folderId` is not valid',
+          location: 'validating tags'
+        });
       }
     });
 }
@@ -55,19 +58,24 @@ function validateTags(tags, userId){
   const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
   console.log('badIDS are', badIds);
   if (badIds.length) {
-    const err = new Error('The `tags` array contains an invalid `id`');
-    err.status = 400;
+    const err = {
+      message: 'The `tags` array contains an invalid `id`',
+      status: 400,
+    };
     return Promise.reject(err);
   }
 
   const filter = {};
   filter.$and = [{'_id':{$in: tags}}, {'userId':userId}]; //check every tag in the  collection and match if its one of the ones listed in the array. Userid must match and these ids have to be in the collection
+  //do a single tag.find that looks for all the tags
+  //count the number of valid tags and make sure it's the same 
   return Tag.find(filter)
     .then(results=>{
-      console.log('RESULTS ARE', results);
       if(results.length!==tags.length){
-        const err = new Error('The `folderId` is not valid');
-        err.status = 400;
+        const err ={
+          message: 'The `folderId` is not valid',
+          status:400,
+        };
         return Promise.reject(err);
       }
       else{
@@ -75,9 +83,6 @@ function validateTags(tags, userId){
       }
     });
 
-  //do a single tag.find that looks for all the tags
-  //count the number of valid tags and make sure it's the same 
-  //figure out which filter to use - theres a mongo operator 
 }
 
 //Next, update the /notes endpoints to ensure that a user can only interact with their own notes.
@@ -150,17 +155,11 @@ router.post('/', (req, res, next) => {
   const { title, content, folderId, tags =[] } = req.body;
   const userId = req.user.id;
 
-  // Make sure user included title and content 
-  const requiredFields = [title, content];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    console.log(req.body);
-    if (!field) {
-      const err = new Error ('Must have title and content!');
-      err.status = 400;
-      return next(err);
-      // QUESTION: shouldnt this validation be done on the client side? 
-    }
+  // Dont trust users or client - Make sure user included title and content 
+  if (!title) {
+    const err = new Error('Missing `title` in request body');
+    err.status = 400;
+    return next(err);
   }
 
   const newNote = {title, content, userId};
@@ -172,7 +171,7 @@ router.post('/', (req, res, next) => {
   }
 
   Promise.all([
-    //but what if there are no folders or tags? shouldn't it not do this?
+    //but what if there are no folders or tags? shouldn't it not do this? that'll resolve in the validate
     validateFolder(folderId, userId),
     validateTags(tags, userId)
   ])
@@ -198,21 +197,17 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  // Make sure user included title and content 
-  const requiredFields = [title, content];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!field) {
-      const err = new Error ('Must have title and content!');
-      err.status = 400;
-      return next(err);
-      // QUESTION: shouldnt this validation be done on the client side? 
-    }
+  // Dont trust users or client - Make sure user included title and content 
+  if (!title) {
+    const err = new Error('Missing `title` in request body');
+    err.status = 400;
+    return next(err);
   }
 
   //only want to put in the folderId if there is one or else it gets a cast error!
   //if folderId doesn't exist since the user didn't choose a folder when updating, when we try to update a note with folderId = '', it throws a CastError. To avoid this, we can do: 
   const updateNote = {title, content};
+
   if (folderId){
     updateNote.folderId = folderId;
   }
@@ -269,7 +264,7 @@ router.delete('/:id', (req, res, next) => {
         return next();
       }
       else{
-        res.status(204).end();
+        res.sendStatus(204);
       }
     })
     .catch(err => {

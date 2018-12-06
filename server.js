@@ -3,8 +3,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-
 const passport = require('passport');
+
 const localStrategy = require('./passport/local');
 const jwtStrategy = require('./passport/jwt');
 
@@ -51,6 +51,7 @@ app.use('/api', jwtAuth, authRouter); //for refresh
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
+  console.log('in 404');
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -58,9 +59,12 @@ app.use((req, res, next) => {
 
 // Custom Error Handler
 app.use((err, req, res, next) => {
+  console.log('in custom error handler');
   if (err.status) {
-    if(err.status ===401){
-      err.message = 'Incorrect username or password';
+    if(err.status ===401)
+    {
+      console.log('the error location in our custom err handler is', err.location);
+      err.message = 'Incorrect username or password'; //change the message from unauthorized to this
     }
     const errBody = Object.assign({}, err, { message: err.message });
     res.status(err.status).json(errBody);

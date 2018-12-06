@@ -53,6 +53,7 @@ router.post('/', (req,res,next) => {
       max: 72
     }
   };
+
   const tooSmallField = Object.keys(sizedFields).find(
     field =>
       'min' in sizedFields[field] &&
@@ -75,7 +76,11 @@ router.post('/', (req,res,next) => {
     err.status = 422;
     return next(err);
   }
-  const {fullname = '', username, password} = req.body;
+ 
+  // // Username and password were validated as pre-trimmed, but we should trim the fullname
+  let {fullname = '', username, password} = req.body;
+  fullname = fullname.trim();
+
   return User.hashPassword(password)
     .then(digest => {
       const newUser = {
