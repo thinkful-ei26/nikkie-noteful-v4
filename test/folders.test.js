@@ -4,15 +4,24 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken'); 
 
 const app = require('../server');
 const { TEST_MONGODB_URI } = require('../config');
+const {JWT_SECRET} = require('../config');
 
 const Folder = require('../models/folder');
-const { folders } = require('../db/seed/data');
+const { folders, users } = require('../db/seed/data');
+const User = require('../models/user');
+
+
 
 const expect = chai.expect;
 chai.use(chaiHttp);
+
+// Define a token and user so it is accessible in the tests
+let token;
+let user;
 
 describe('Noteful API - Folders', function () {
 
@@ -23,9 +32,15 @@ describe('Noteful API - Folders', function () {
 
   beforeEach(function () {
     return Promise.all([
+      User.insertMany(users),
       Folder.insertMany(folders),
       Folder.createIndexes()
-    ]);
+    ])
+    //Insert the users and folders into the database. Then capture the users and extract the first user and create a valid JWT.
+      .then(([users]) => {
+        user = users[0];
+        token = jwt.sign({ user }, JWT_SECRET, { subject: user.username });
+      });
   });
 
   afterEach(function () {
