@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.log('in custom error handler');
   if (err.status) {
-    if(err.status ===401)
+    if(err.status === 401)
     {
       console.log('the error location in our custom err handler is', err.location);
       err.message = 'Incorrect username or password'; //change the message from unauthorized to this

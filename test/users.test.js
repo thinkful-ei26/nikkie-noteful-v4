@@ -37,7 +37,7 @@ describe('Noteful API - Users', function () {
   
   describe('POST /api/users', function () {
     
-    it.only('Should create a new user', function () {
+    it('Should create a new user', function () {
       let res;
       return chai
         .request(app)
@@ -64,7 +64,7 @@ describe('Noteful API - Users', function () {
         });
     });
     
-    it.only('Should reject users with missing username', function(){
+    it('Should reject users with missing username', function(){
       let res;
       return chai
         .request(app)
@@ -79,7 +79,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
-    it.only('Should reject users with missing password', function(){
+    it('Should reject users with missing password', function(){
       let res;
       return chai
         .request(app)
@@ -94,7 +94,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
-    it.only('Should reject users with non-string username', function(){
+    it('Should reject users with non-string username', function(){
       let res;
       return chai
         .request(app)
@@ -109,7 +109,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
-    it.only('Should reject users with non-string password', function(){
+    it('Should reject users with non-string password', function(){
       let res;
       return chai
         .request(app)
@@ -124,7 +124,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
-    it.only('Should reject users with non-trimmed username', function(){
+    it('Should reject users with non-trimmed username', function(){
       let res;
       return chai
         .request(app)
@@ -139,7 +139,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
-    it.only('Should reject users with non-trimmed password', function(){
+    it('Should reject users with non-trimmed password', function(){
       let res;
       return chai
         .request(app)
@@ -154,7 +154,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
-    it.only('Should reject users with empty username', function(){
+    it('Should reject users with empty username', function(){
       let res;
       return chai
         .request(app)
@@ -169,7 +169,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
-    it.only('Should reject users with password less than 8 characters', function(){
+    it('Should reject users with password less than 8 characters', function(){
       let res;
       return chai
         .request(app)
@@ -184,7 +184,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
-    it.only('Should reject users with password greater than 72 characters', function(){
+    it('Should reject users with password greater than 72 characters', function(){
       let res;
       return chai
         .request(app)
@@ -199,7 +199,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
-    it.only('Should reject users with duplicate username', function(){
+    it('Should reject users with duplicate username', function(){
       //make first user
       return User.create({
         username,
@@ -223,7 +223,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });  
     });
-    it.only('Should trim fullname', function(){
+    it('Should trim fullname', function(){
       let res;
       return chai
         .request(app)
