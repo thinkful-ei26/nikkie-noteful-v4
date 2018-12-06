@@ -41,7 +41,7 @@ router.get('/:id', (req,res,next)=>{
   Tag.findOne({_id:id, userId})
     .then(tag=>{
       if(tag){
-        res.status(200).json(tag);
+        res.json(tag);
       }
       else{
         next();
@@ -57,10 +57,10 @@ router.post('/', (req,res,next)=>{
   let {name} = req.body;
   const userId = req.user.id;
 
-  if(name){
-    // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
-  }
-  else{
+  // if(name){
+  //   // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the tag name to upper case so it gets sorted properly later
+  // }
+  if(!name){
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
     const err = new Error('Missing name for the tag!');
     err.status = 400;
@@ -109,7 +109,7 @@ router.put('/:id',(req,res,next)=>{
 
   const updateTag = {name, userId};
 
-  Tag.findByIdAndUpdate(id, {$set: updateTag}, {new:true})
+  Tag.findByIdAndUpdate(id, updateTag, {new:true})
     .then(tag=>{
       if(tag){
         res.status(200).json(tag);

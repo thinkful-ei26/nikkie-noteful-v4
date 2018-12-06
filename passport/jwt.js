@@ -14,15 +14,11 @@ const options = {
 };
 
 const jwtStrategy = new JwtStrategy(options, (payload, done) => {
-  //Question: where does payload come from? Need clarification on this process. Where does this deal with if the token is invalid?
-
   //second argument is a callback fn called verify, which takes the payload (we got that from jwtFromRequest), and done is the passport callback fn
 
   //// The following line accepts the JWT and sets `req.user = user`
   done(null, payload.user); //// JWT is valid - sets `req.user = payload.user`
-  //this validates whether or not the user has a valid token by calling .verify behind the scenes - if that fails it won't return payload.user?...
+  //this validates whether or not the user has a valid token by calling .verify behind the scenes - if that fails it'll bubble up to our error handler
 });
 
 module.exports = jwtStrategy; 
-
-// Strategy looks at header, grabs the token, and then calls .verify, and the output of that is the payload. and then it calls our callback fn with that payload and the done fn. Look at screenshot 

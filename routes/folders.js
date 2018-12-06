@@ -35,7 +35,7 @@ router.get('/:id', (req, res, next) => {
   Folder.findOne({_id:id, userId})
     .then(folder => {
       if(folder){
-        res.status(200).json(folder);
+        res.json(folder);
       }
       else{
         // this 404 will happen if you try to access a valid mongoose id, but one that does not exist (either bc it was deleted or never existed) - if client messes up 
@@ -53,10 +53,10 @@ router.post('/', (req, res, next) => {
   let {name} = req.body;
   const userId = req.user.id;
 
-  if(name){
-    // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the folder name to upper case so it gets sorted properly later
-  }
-  else{
+  // if(name){
+  //   // name = name.charAt(0).toUpperCase() + name.slice(1); //convert the first letter of the folder name to upper case so it gets sorted properly later
+  // }
+  if(!name){
     //this error should be displayed to user incase they forget to add a folder name. Dont trust user!
     const err = new Error('Missing name for the folder!');
     err.status = 400;
@@ -100,7 +100,7 @@ router.put('/:id', (req, res, next) => {
   }
 
   const updateFolder = {name, userId};
-  Folder.findByIdAndUpdate(id, {$set: updateFolder}, {new: true})
+  Folder.findByIdAndUpdate(id, updateFolder, {new: true}) 
   // need new is true to get back updated version
     .then(folder => {
       if(folder){
