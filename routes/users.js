@@ -14,8 +14,12 @@ router.post('/', (req,res,next) => {
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
-    const err = new Error(`Missing '${missingField}' in request body`);
-    err.status = 422;
+    const err = {
+      message: `Missing '${missingField}' in request body`,
+      reason: 'ValidationError',
+      location: `${missingField}`,
+      status: 422
+    };
     return next(err);
   }
 
@@ -25,8 +29,12 @@ router.post('/', (req,res,next) => {
   );
 
   if (nonStringField) {
-    const err = new Error('Incorrect field type: expected string');
-    err.status = 422;
+    const err = {
+      message: 'Incorrect field type: expected string',
+      reason: 'ValidationError',
+      location: nonStringField,
+      status: 422
+    };
     return next(err);
   }
 
@@ -38,8 +46,12 @@ router.post('/', (req,res,next) => {
   );
 
   if (nonTrimmedField) {
-    const err = new Error('Cannot start or end with whitespace');
-    err.status = 422;
+    const err = {
+      message: 'Cannot start or end with whitespace',
+      reason: 'ValidationError',
+      location: nonTrimmedField,
+      status: 422
+    };
     return next(err);
   }
 
@@ -72,8 +84,12 @@ router.post('/', (req,res,next) => {
       : `Must be at most ${sizedFields[tooLargeField]
         .max} characters long`;
 
-    const err = new Error(message);
-    err.status = 422;
+    const err = {
+      message: message,
+      reason: 'ValidationError',
+      location: tooSmallField || tooLargeField,
+      status: 422
+    };    
     return next(err);
   }
  
@@ -96,8 +112,12 @@ router.post('/', (req,res,next) => {
     })
     .catch(err => {
       if (err.code === 11000) {
-        err = new Error('The username already exists');
-        err.status = 400;
+        err = {
+          message: 'The username already exists',
+          reason: 'ValidationError',
+          location: 'username',
+          status: 422
+        }; 
       }
       next(err);
     });

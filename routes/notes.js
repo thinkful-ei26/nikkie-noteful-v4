@@ -55,9 +55,11 @@ function validateTags(tags, userId){
     return Promise.resolve(); //if arent even tags, move on 
   }
 
-  const badIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
-  console.log('badIDS are', badIds);
-  if (badIds.length) {
+  //ADD IN A CHECK IF ITS AN ARRAY 
+
+  const invalidIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
+  console.log('invalidIds are', invalidIds);
+  if (invalidIds.length) {
     const err = {
       message: 'The `tags` array contains an invalid `id`',
       status: 400,
@@ -177,6 +179,7 @@ router.post('/', (req, res, next) => {
   ])
     .then(()=> Note.create(newNote))
     .then(note => {
+      console.log('NOTE IS', note);
       res.location(`http://${req.headers.host}/api/notes/${note.id}`).status(201).json(note);
     })
     .catch(err => {
