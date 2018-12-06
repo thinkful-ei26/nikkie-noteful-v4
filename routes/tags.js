@@ -59,8 +59,12 @@ router.post('/', (req,res,next)=>{
 
   if(!name){
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
-    const err = new Error('Missing name for the tag!');
-    err.status = 400;
+    const err = {
+      message: 'Missing name for the tag!',
+      reason: 'MissingContent',
+      status: 400,
+      location: 'tag'
+    };
     return next(err);
   }
 
@@ -73,8 +77,12 @@ router.post('/', (req,res,next)=>{
     .catch(err => {
     // if the tag name is duplicate, this is the error code
       if (err.code === 11000) {
-        err = new Error('The tag name already exists. No duplicates!');
-        err.status = 400;
+        err = {
+          message: 'The tag name already exists. No duplicates!',
+          reason: 'DuplicateError',
+          status: 400,
+          location: 'tag'
+        };
       }
       next(err);
     });
@@ -96,8 +104,12 @@ router.put('/:id',(req,res,next)=>{
 
   if(!name){
     //this error should be displayed to user incase they forget to add a tag name. Dont trust user!
-    const err = new Error('Missing name for the tag!');
-    err.status = 400;
+    const err = {
+      message: 'Missing name for the tag!',
+      reason: 'MissingContent',
+      status: 400,
+      location: 'tag'
+    };
     return next(err);
   }
 
@@ -115,8 +127,12 @@ router.put('/:id',(req,res,next)=>{
     .catch(err=>{
       // If there's duplicates
       if (err.code === 11000) {
-        err = new Error('The tag name already exists. No duplicates!');
-        err.status = 400;
+        err = {
+          message: 'The tag name already exists. No duplicates!',
+          reason: 'DuplicateError',
+          status: 400,
+          location: 'tag'
+        };
       }
       next(err);
     });

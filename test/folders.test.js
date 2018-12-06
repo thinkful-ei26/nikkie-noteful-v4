@@ -18,7 +18,7 @@ const User = require('../models/user');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-describe.only('Noteful API - Folders', function () {
+describe('Noteful API - Folders', function () {
 
   before(function () {
     return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
@@ -378,5 +378,6 @@ describe.only('Noteful API - Folders', function () {
           expect(res).to.have.status(404);
         });
     });
+    
   });
 });
