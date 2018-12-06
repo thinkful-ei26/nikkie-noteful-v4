@@ -159,8 +159,12 @@ router.post('/', (req, res, next) => {
 
   // Dont trust users or client - Make sure user included title and content 
   if (!title) {
-    const err = new Error('Missing `title` in request body');
-    err.status = 400;
+    const err = {
+      message: 'Missing title for the note!',
+      reason: 'MissingContent',
+      status: 400,
+      location: 'note'
+    };
     return next(err);
   }
 
@@ -202,8 +206,12 @@ router.put('/:id', (req, res, next) => {
 
   // Dont trust users or client - Make sure user included title and content 
   if (!title) {
-    const err = new Error('Missing `title` in request body');
-    err.status = 400;
+    const err = {
+      message: 'Missing title for the note!',
+      reason: 'MissingContent',
+      status: 400,
+      location: 'note'
+    };
     return next(err);
   }
 

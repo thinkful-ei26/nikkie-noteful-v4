@@ -19,7 +19,7 @@ const { notes, tags, users } = require('../db/seed/data');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
-describe.only('Noteful API - Tags', function () {
+describe('Noteful API - Tags', function () {
 
   before(function () {
     return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
