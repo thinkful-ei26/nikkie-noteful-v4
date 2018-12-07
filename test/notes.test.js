@@ -560,7 +560,7 @@ describe('Notes API tests', function(){
     //       // expect note to have been updated
     //       expect(new Date(res.body.updatedAt)).to.greaterThan(data.updatedAt);
     //     });
-    // });
+    // });  
 
     it('should respond with status 400 and an error message when `id` is not valid', function () {
       const updateItem = {
