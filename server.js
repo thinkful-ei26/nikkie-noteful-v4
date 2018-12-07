@@ -51,7 +51,6 @@ app.use('/api', jwtAuth, authRouter); //for refresh
 
 // Custom 404 Not Found route handler
 app.use((req, res, next) => {
-  console.log('in 404');
   const err = new Error('Not Found');
   err.status = 404;
   next(err);

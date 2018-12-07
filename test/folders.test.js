@@ -349,7 +349,6 @@ describe('Noteful API - Folders', function () {
       let folderId;
       return Note.findOne({folderId: {$exists: true }}) //find a note that has a folderId
         .then(data => {
-          console.log('DATA IS', data);
           folderId = data.folderId;
           return chai.request(app).delete(`/api/folders/${folderId}`).set('Authorization', `Bearer ${token}`);
         })

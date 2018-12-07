@@ -58,7 +58,6 @@ function validateTags(tags, userId){
   //ADD IN A CHECK IF ITS AN ARRAY 
 
   const invalidIds = tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
-  console.log('invalidIds are', invalidIds);
   if (invalidIds.length) {
     const err = {
       message: 'The `tags` array contains an invalid `id`',
@@ -183,7 +182,6 @@ router.post('/', (req, res, next) => {
   ])
     .then(()=> Note.create(newNote))
     .then(note => {
-      console.log('NOTE IS', note);
       res.location(`http://${req.headers.host}/api/notes/${note.id}`).status(201).json(note);
     })
     .catch(err => {
@@ -239,10 +237,10 @@ router.put('/:id', (req, res, next) => {
     validateFolder(folderId, userId),
     validateTags(tags, userId)
   ])
-    .then(()=> Note.findOneAndUpdate({_id: id, userId: userId}, updateNote, {new: true}))
+    .then(()=> {
+      return Note.findOneAndUpdate({_id: id, userId: userId}, updateNote, {new: true}).populate('tags');
+    })
     .then(note => {
-      console.log('THE NOTE IS ', note);
-      console.log('THIS USERS ID IS ', userId);
       if(note){
         res.status(200).json(note);
       }

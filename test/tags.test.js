@@ -347,7 +347,6 @@ describe('Noteful API - Tags', function () {
       return Note.findOne({tags: {$exists: true, $ne: [] }}) //find a note that has a tagId
         .then(data => {
           tagId = data.tags[0];
-          console.log('tagid is', tagId);
           return chai.request(app).delete(`/api/tags/${tagId}`).set('Authorization', `Bearer ${token}`);
         })
         .then(function (res) {

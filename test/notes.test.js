@@ -159,7 +159,6 @@ describe('Notes API tests', function(){
       return Tag.findOne({userId: user.id})
         .then((_data) => {
           data = _data;
-          console.log('dataId is', data.id);
           return Promise.all([
             Note.find({ tags: data.id }),
             chai.request(app).get(`/api/notes?tagId=${data.id}`)
@@ -402,7 +401,6 @@ describe('Notes API tests', function(){
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
-          console.log(res.body);
           expect(res.body).to.include.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'userId');
 
           expect(res.body.id).to.equal(data.id);
@@ -427,9 +425,6 @@ describe('Notes API tests', function(){
         .then(res => {
           expect(res).to.have.status(400);
           expect(res.body.message).to.eq('The `id` is not valid');
-        })
-        .catch(err => {
-          console.log(err);
         });
     });
 
@@ -491,7 +486,7 @@ describe('Notes API tests', function(){
     });
   });
 
-  describe.only('DELETE endpoint', function() {
+  describe('DELETE endpoint', function() {
     //  1. get a note
     //  2. make a DELETE request for that note's id
     //  3. assert that response has right status code
