@@ -79,6 +79,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
+
     it('Should reject users with missing password', function(){
       let res;
       return chai
@@ -94,6 +95,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
+
     it('Should reject users with non-string username', function(){
       let res;
       return chai
@@ -109,6 +111,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
+
     it('Should reject users with non-string password', function(){
       let res;
       return chai
@@ -124,6 +127,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
+
     it('Should reject users with non-trimmed username', function(){
       let res;
       return chai
@@ -139,6 +143,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
+
     it('Should reject users with non-trimmed password', function(){
       let res;
       return chai
@@ -154,6 +159,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
+
     it('Should reject users with empty username', function(){
       let res;
       return chai
@@ -169,6 +175,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });
     });
+
     it('Should reject users with password less than 8 characters', function(){
       let res;
       return chai
@@ -184,6 +191,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
+
     it('Should reject users with password greater than 72 characters', function(){
       let res;
       return chai
@@ -199,6 +207,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('password');
         });
     });
+
     it('Should reject users with duplicate username', function(){
       //make first user
       return User.create({
@@ -223,6 +232,7 @@ describe('Noteful API - Users', function () {
           expect(res.body.location).to.equal('username');
         });  
     });
+    
     it('Should trim fullname', function(){
       let res;
       return chai

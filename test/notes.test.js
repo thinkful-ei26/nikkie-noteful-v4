@@ -4,6 +4,8 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const sinon = require('sinon');
+
 
 const app = require('../server');
 const {TEST_MONGODB_URI } = require('../config'); 
@@ -17,6 +19,7 @@ const {notes, folders, tags, users} = require('../db/seed/data');
 
 const expect = chai.expect;
 chai.use(chaiHttp);
+const sandbox = sinon.createSandbox();
 
 //all of our tests will be wrapped in this: 
 describe('Notes API tests', function(){
@@ -135,6 +138,38 @@ describe('Notes API tests', function(){
         });
     });
 
+    it('should return correct search results for content search', function () {
+      const searchTerm = 'lorem ipsum';
+      const re = new RegExp(searchTerm, 'i');
+
+      const dbPromise = Note.find({
+        userId: user.id,
+        $or: [{ 'title': re }, { 'content': re }]
+      })
+        .sort({ updatedAt: 'desc' });
+      const apiPromise = chai.request(app)
+        .get(`/api/notes?searchTerm=${searchTerm}`)
+        .set('Authorization', `Bearer ${token}`);
+
+      return Promise.all([dbPromise, apiPromise])
+        .then(([data, res]) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('array');
+          expect(res.body).to.have.length(data.length);
+          res.body.forEach(function (item, i) {
+            expect(item).to.be.a('object');
+            expect(item).to.include.all.keys('id', 'title', 'createdAt', 'updatedAt', 'tags', 'userId');
+            expect(item.id).to.equal(data[i].id);
+            expect(item.title).to.equal(data[i].title);
+            expect(item.content).to.equal(data[i].content);
+            expect(item.userId).to.equal(data[i].userId.toString());
+            expect(new Date(item.createdAt)).to.eql(data[i].createdAt);
+            expect(new Date(item.updatedAt)).to.eql(data[i].updatedAt);
+          });
+        });
+    });
+
     it('should return correct search results for a folderId query', function () {
       let data;
       return Folder.findOne({userId: user.id})
@@ -194,6 +229,20 @@ describe('Notes API tests', function(){
           expect(res.body).to.have.length(db.length);
         });
     });
+
+    it('should catch errors and respond properly', function () {
+      sandbox.stub(Note.schema.options.toJSON, 'transform').throws('FakeError');
+
+      return chai.request(app)
+        .get('/api/notes')
+        .set('Authorization', `Bearer ${token}`)
+        .then(res => {
+          expect(res).to.have.status(500);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Internal Server Error');
+        });
+    });
   });
 
   describe('GET /api/notes/:id', function () {
@@ -240,6 +289,22 @@ describe('Notes API tests', function(){
         });
     });
 
+    it('should catch errors and respond properly', function () {
+      sandbox.stub(Note.schema.options.toJSON, 'transform').throws('FakeError');
+      return Note.findOne()
+        .then(data => {
+          return chai.request(app)
+            .get(`/api/notes/${data.id}`)
+            .set('Authorization', `Bearer ${token}`);
+        })
+        .then(res => {
+          expect(res).to.have.status(500);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Internal Server Error');
+        });
+    });
+
   });
 
   describe('POST endpoint', function() {
@@ -278,8 +343,42 @@ describe('Notes API tests', function(){
         });
     });
 
-    it('should create and return a new item even if folder is empty string', function() {
+    it('should create and return a new item when provided valid title (content optional)', function() {
 
+      const newNote = {title: 'testing'};
+      let res; 
+
+      return chai.request(app)
+        .post('/api/notes')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newNote)
+        .then(function(_res) {
+          res = _res;
+          //compare the returned object to the data we sent over.
+          expect(res).to.have.status(201);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.include.keys(
+            'title', 'id', 'createdAt', 'updatedAt', 'userId');
+          expect(res.body.id).to.not.be.null;
+          expect(res.body.title).to.equal(newNote.title);
+          expect(res.body.content).to.equal(newNote.content);
+          return Note.findOne({_id: res.body.id, userId: user.id});
+        })
+        .then(function(note) {
+          // retrieve the new note from the DB and compare its data to the data we sent over
+          expect(res.body.id).to.equal(note.id);
+          expect(res.body.title).to.equal(note.title);
+          expect(res.body.content).to.equal(note.content);
+          expect(res.body.userId).to.equal(note.userId.toString());
+          expect(new Date(res.body.createdAt)).to.eql(note.createdAt);
+          expect(new Date(res.body.updatedAt)).to.eql(note.updatedAt);
+
+        });
+    });
+
+
+    it('should create and return a new item even if folder is empty string', function() {
       const newNote = {title: 'testing', 'content': 'blah', folder: ''};
       let res; 
 
@@ -376,6 +475,26 @@ describe('Notes API tests', function(){
         });
     });
 
+    it.only('should catch errors and respond properly', function () {
+      sandbox.stub(Note.schema.options.toJSON, 'transform').throws('FakeError');
+
+      const newItem = {
+        title: 'testing',
+        content: '123'
+      };
+
+      return chai.request(app)
+        .post('/api/notes')
+        .set('Authorization', `Bearer ${token}`)
+        .send(newItem)
+        .then(res => {
+          expect(res).to.have.status(500);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Internal Server Error');
+        });
+    });
+
   });
 
   describe('PUT endpoint', function() {
@@ -412,6 +531,36 @@ describe('Notes API tests', function(){
           expect(new Date(res.body.updatedAt)).to.greaterThan(data.updatedAt);
         });
     });
+
+    // it.only('should update the note when provided valid content', function () {
+    //   const updateItem = {
+    //     'content': 'woof woof',
+    //   };
+    //   let data;
+    //   return Note.findOne({userId: user.id})
+    //     .then(_data => {
+    //       data = _data;
+    //       return chai.request(app)
+    //         .put(`/api/notes/${data.id}`)
+    //         .set('Authorization', `Bearer ${token}`)
+    //         .send(updateItem);
+    //     })
+    //     .then(function (res) {
+    //       console.log('RES IS,', res);
+    //       expect(res).to.have.status(200);
+    //       expect(res).to.be.json;
+    //       expect(res.body).to.be.a('object');
+    //       expect(res.body).to.include.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'userId');
+
+    //       expect(res.body.id).to.equal(data.id);
+    //       expect(res.body.title).to.equal(updateItem.title);
+    //       expect(res.body.content).to.equal(updateItem.content);
+    //       expect(res.body.userId).to.equal(data.userId.toString());
+    //       expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
+    //       // expect note to have been updated
+    //       expect(new Date(res.body.updatedAt)).to.greaterThan(data.updatedAt);
+    //     });
+    // });
 
     it('should respond with status 400 and an error message when `id` is not valid', function () {
       const updateItem = {

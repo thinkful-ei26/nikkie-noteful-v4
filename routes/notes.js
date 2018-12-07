@@ -1,5 +1,7 @@
 'use strict';
 
+//question: aren’t all the validations and error handling here when a user causes an error through invalid input? Where in the code is there potential for a runtime error where we should use `const err = new Error(“something went wrong”)?`
+
 const express = require('express');
 const mongoose = require('mongoose');
 
