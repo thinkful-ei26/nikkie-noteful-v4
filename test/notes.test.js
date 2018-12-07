@@ -50,6 +50,7 @@ describe('Notes API tests', function(){
 
   afterEach(function () {
     // drop the database after each test 
+    sandbox.restore();
     return mongoose.connection.db.dropDatabase();
   });
 
@@ -475,7 +476,7 @@ describe('Notes API tests', function(){
         });
     });
 
-    it.only('should catch errors and respond properly', function () {
+    it('should catch errors and respond properly', function () {
       sandbox.stub(Note.schema.options.toJSON, 'transform').throws('FakeError');
 
       const newItem = {
