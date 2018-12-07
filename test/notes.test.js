@@ -27,7 +27,7 @@ describe('Notes API tests', function(){
     // first connect and drop anything that might have been in the db
     return mongoose.connect(TEST_MONGODB_URI)
       .then(() => mongoose.connection.db.dropDatabase());
-  });   
+  });     
 
   let user;
   let token; 
